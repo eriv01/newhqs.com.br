@@ -1,5 +1,5 @@
 // /api/meta-event.js
-const PIXEL_ID = 'SEU_PIXEL_ID_AQUI';
+const PIXEL_ID = '3326903237487845';
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Método não permitido' });
