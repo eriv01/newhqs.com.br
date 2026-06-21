@@ -886,8 +886,22 @@ function toggleBump(qual){
 // ── META CAPI ────────────────────────────────────────────
 function getCookie(name){const v=document.cookie.match('(^|;)\\s*'+name+'\\s*=\\s*([^;]+)');return v?v.pop():'';}
 async function dispararCAPI(eventName,extraData={}){
-  try{await fetch('/api/meta-event',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({eventName,eventSourceUrl:window.location.href,clientUserAgent:navigator.userAgent,fbp:getCookie('_fbp'),fbc:getCookie('_fbc'),...extraData})});}
-  catch(e){console.error('CAPI:',e);}
+  try{
+    await fetch('/api/meta-event',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        eventName,
+        eventSourceUrl:window.location.href,
+        clientUserAgent:navigator.userAgent,
+        fbp:getCookie('_fbp'),
+        fbc:getCookie('_fbc'),
+        ...extraData
+      })
+    });
+  }catch(e){
+    console.error('CAPI:',e);
+  }
 }
 
 // ── PIX ──────────────────────────────────────────────────
@@ -913,6 +927,22 @@ async function gerarPix(){
     document.getElementById('pix-form').style.display='none';
     document.getElementById('pix-result').style.display='block';
     document.getElementById('pix-result').scrollIntoView({behavior:'smooth',block:'start'});
+     const total=calcTotal();
+
+if(typeof fbq!=='undefined'){
+  fbq('track','AddPaymentInfo',{
+    value:total,
+    currency:'BRL'
+  });
+}
+
+dispararCAPI('AddPaymentInfo',{
+  nome,
+  email,
+  phone:wpp,
+  value:total,
+  currency:'BRL'
+});
     iniciarPolling(data.id,nome,email,wpp);
   }catch(err){
     showPixError(err.message||'Erro ao gerar PIX. Tente novamente.');
